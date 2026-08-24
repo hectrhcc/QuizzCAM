@@ -395,7 +395,7 @@
     "pregunta": "2. Caso: Durante el desarrollo de una clase de Mecánica Automotriz en un taller amplio, el docente se desplaza entre diferentes autos y grupos de trabajo. ¿Qué acción de seguimiento debe realizar el camarógrafo?",
     "opciones": [
       "Permanecer estático en un extremo del taller con zoom máximo.",
-      "Desplazarse junto con el trípode siguiendo los recorridos del docente para mantener plano medio/general y captura de audio óptima.",
+      "Debe desplazarse solo en los momentos en que pierda de vista al docente. En dichos casos debe seguirlo, intentando grabar siempre la interacción entre docente y estudiantes",
       "Dejar la cámara en el centro y girarla rápidamente.",
       "Solicitar al docente que no se mueva de un solo auto."
     ],
