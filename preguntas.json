@@ -321,8 +321,8 @@
       "35 minutos",
       "40 minutos"
     ],
-    "respuestaCorrecta": 2,
-    "feedback": "Dado que el límite es de 40 minutos, la señal de aviso discreta levantando la mano debe efectuarse al cumplir los 35 minutos."
+    "respuestaCorrecta": 1,
+    "feedback": "El límite es de 40 minutos, la señal de aviso discreta levantando la mano debe efectuarse al cumplir los 30 minutos."
   },
   {
     "id": 26,
