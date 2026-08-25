@@ -511,6 +511,7 @@ let currentIndex = 0;
 let score = 0;
 let answered = false;
 let shuffledCorrectIdx = 0;
+let quizOrder = []; // pre-computed shuffled questions with balanced positions
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -521,6 +522,25 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Pre-compute balanced answer positions: each question gets a target position (0-3)
+// distributed as evenly as possible, then shuffled.
+function buildQuizOrder() {
+  const total = QUIZ_DATA.length;
+  const positions = [];
+  // Assign 0,1,2,3 cyclically then shuffle
+  for (let i = 0; i < total; i++) {
+    positions.push(i % 4);
+  }
+  // Shuffle the position assignments so they aren't predictable
+  const shuffledPositions = shuffleArray(positions);
+  // Build a new order: shuffle questions too, and assign each a target position
+  const indices = shuffleArray(Array.from({ length: total }, (_, i) => i));
+  quizOrder = indices.map((qi, i) => ({
+    qIndex: qi,
+    targetPos: shuffledPositions[i]
+  }));
+}
+
 function updateProgress() {
   const total = QUIZ_DATA.length;
   const pct = (currentIndex / total) * 100;
@@ -529,13 +549,18 @@ function updateProgress() {
   scoreLabel.textContent = `Puntaje: ${score}`;
 }
 
-function renderQuestion(q) {
+function renderQuestion(q, targetPos) {
   answered = false;
 
-  // Shuffle options and track where the correct answer ends up
-  const shuffledOpts = shuffleArray(q.opciones);
   const origCorrect = q.respuestaCorrecta;
-  shuffledCorrectIdx = shuffledOpts.indexOf(q.opciones[origCorrect]);
+  const correctText = q.opciones[origCorrect];
+
+  // Remove the correct answer, shuffle the rest, then insert correct at targetPos
+  const others = q.opciones.filter((_, i) => i !== origCorrect);
+  const shuffledOthers = shuffleArray(others);
+  const shuffledOpts = [...shuffledOthers];
+  shuffledOpts.splice(targetPos, 0, correctText);
+  shuffledCorrectIdx = targetPos;
 
   const colors = ['bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
 
@@ -624,7 +649,8 @@ function nextStep() {
   if (currentIndex >= QUIZ_DATA.length) {
     showResults();
   } else {
-    renderQuestion(QUIZ_DATA[currentIndex]);
+    const item = quizOrder[currentIndex];
+    renderQuestion(QUIZ_DATA[item.qIndex], item.targetPos);
     updateProgress();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -653,7 +679,9 @@ retryBtn.addEventListener('click', () => {
   currentIndex = 0;
   score = 0;
   resultsDiv.classList.add('hidden');
-  renderQuestion(QUIZ_DATA[0]);
+  buildQuizOrder();
+  const item = quizOrder[0];
+  renderQuestion(QUIZ_DATA[item.qIndex], item.targetPos);
   updateProgress();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
@@ -661,7 +689,9 @@ retryBtn.addEventListener('click', () => {
 // ============================================================
 // 3. INICIALIZACIÓN
 // ============================================================
-renderQuestion(QUIZ_DATA[0]);
+buildQuizOrder();
+const firstItem = quizOrder[0];
+renderQuestion(QUIZ_DATA[firstItem.qIndex], firstItem.targetPos);
 updateProgress();
 </script>
 
